@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRUCIBLE // VOLT-OPS — Electrical Account Management & Field Margin Sentinel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            mono: ['"JetBrains Mono"', 'monospace'],
+            sans: ['"Space Grotesk"', 'sans-serif'],
+          },
+          colors: {
+            void: '#070B12',
+            surface: '#0D1424',
+            panel: '#121B30',
+            panelBorder: '#1E2D4A',
+            accentOrange: '#FF7A18',
+            accentCyan: '#00E5FF',
+            signalGreen: '#00E676',
+            alertRed: '#FF3B30',
+            warnAmber: '#FFB300',
+            textMuted: '#748BA7',
+            textLight: '#E2E8F0',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Crucible / Palantir Gotham Aesthetic Styling */
+    body {
+      background-color: #070B12;
+      color: #E2E8F0;
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(0, 229, 255, 0.03) 0%, transparent 60%),
+        linear-gradient(to right, rgba(30, 45, 74, 0.15) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(30, 45, 74, 0.15) 1px, transparent 1px);
+      background-size: 100% 100%, 32px 32px, 32px 32px;
+    }
+    .hud-border {
+      border: 1px solid #1E2D4A;
+      box-shadow: inset 0 0 12px rgba(0, 229, 255, 0.02);
+    }
+    .hud-border:hover {
+      border-color: rgba(0, 229, 255, 0.35);
+      box-shadow: 0 0 16px rgba(0, 229, 255, 0.05), inset 0 0 12px rgba(0, 229, 255, 0.04);
+    }
+    .glow-orange {
+      text-shadow: 0 0 10px rgba(255, 122, 24, 0.6);
+    }
+    .glow-cyan {
+      text-shadow: 0 0 10px rgba(0, 229, 255, 0.6);
+    }
+    .glow-green {
+      text-shadow: 0 0 10px rgba(0, 230, 118, 0.6);
+    }
+    .pulse-dot {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.1); }
+    }
+    /* Scrollbars */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #070B12; }
+    ::-webkit-scrollbar-thumb { background: #1E2D4A; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #00E5FF; }
+  </style>
+</head>
+<body class="font-sans min-h-screen text-xs md:text-sm selection:bg-accentCyan selection:text-black">
+
+  <!-- TOP HUD BAR -->
+  <header class="border-b border-panelBorder bg-surface/90 backdrop-blur sticky top-0 z-40 px-4 py-2.5 flex flex-wrap items-center justify-between gap-3">
+    <!-- Brand / System ID -->
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded border border-accentOrange/60 bg-accentOrange/10 flex items-center justify-center font-mono font-bold text-accentOrange tracking-widest text-base shadow-[0_0_12px_rgba(255,122,24,0.3)]">
+        ⬡
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="font-mono font-bold tracking-wider text-textLight text-sm">CRUCIBLE // VOLT-OPS</span>
+          <span class="px-1.5 py-0.5 rounded text-[10px] font-mono uppercase bg-accentCyan/10 text-accentCyan border border-accentCyan/30">SYS-VER 4.2</span>
+          <span class="px-1.5 py-0.5 rounded text-[10px] font-mono uppercase bg-signalGreen/10 text-signalGreen border border-signalGreen/30 flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-signalGreen pulse-dot"></span> LIVE DISPATCH
+          </span>
+        </div>
+        <p class="text-[11px] text-textMuted font-mono">Electrical Service Account Management &amp; Field Margin Sentinel</p>
+      </div>
+    </div>
+
+    <!-- Live Telemetry Stats -->
+    <div class="hidden lg:flex items-center gap-6 font-mono text-[11px]">
+      <div class="border-l border-panelBorder pl-3">
+        <span class="text-textMuted block text-[9px] uppercase">WIP Under Management</span>
+        <span class="text-textLight font-semibold">$384,250 AUD</span>
+      </div>
+      <div class="border-l border-panelBorder pl-3">
+        <span class="text-textMuted block text-[9px] uppercase">Portfolio Target GP</span>
+        <span class="text-signalGreen font-semibold">39.4% <span class="text-[9px] text-textMuted font-normal">(Target 38%)</span></span>
+      </div>
+      <div class="border-l border-panelBorder pl-3">
+        <span class="text-textMuted block text-[9px] uppercase">Technician Utilization</span>
+        <span class="text-accentCyan font-semibold">88.6% <span class="text-[9px] text-textMuted font-normal">(14 Techs)</span></span>
+      </div>
+      <div class="border-l border-panelBorder pl-3">
+        <span class="text-textMuted block text-[9px] uppercase">LME Copper Spot</span>
+        <span class="text-accentOrange font-semibold">$9,240 USD/t <span class="text-signalGreen text-[9px]">▲ 1.2%</span></span>
+      </div>
+      <div class="border-l border-panelBorder pl-3">
+        <span class="text-textMuted block text-[9px] uppercase">AEST Clock</span>
+        <span id="liveClock" class="text-textLight font-mono">16:45:00</span>
+      </div>
+    </div>
+
+    <!-- Candidate Profile Badge -->
+    <div class="flex items-center gap-2 pl-3 border-l border-panelBorder">
+      <div class="text-right">
+        <span class="font-mono text-xs text-textLight block font-semibold">TOBIAS HALL</span>
+        <span class="text-[10px] font-mono text-accentOrange">Account Manager · UEE22020</span>
+      </div>
+      <div class="w-7 h-7 rounded bg-panel border border-accentCyan/40 flex items-center justify-center font-mono text-accentCyan text-xs font-bold">
+        TH
+      </div>
+    </div>
+  </header>
+
+  <!-- NAVIGATION TABS -->
+  <nav class="border-b border-panelBorder bg-void/90 px-4 py-2 flex items-center justify-between gap-2 overflow-x-auto text-xs font-mono">
+    <div class="flex items-center gap-1 sm:gap-2">
+      <button onclick="switchTab('sentinel')" id="tab-sentinel" class="nav-btn px-3 py-1.5 rounded transition flex items-center gap-1.5 bg-accentCyan/15 text-accentCyan border border-accentCyan/40 shadow-[0_0_10px_rgba(0,229,255,0.15)]">
+        <span>⚡</span> <span>1. MARGIN SENTINEL</span>
+        <span class="ml-1 px-1 rounded-full text-[9px] bg-alertRed text-white font-bold">2 ALERT</span>
+      </button>
+
+      <button onclick="switchTab('dispatch')" id="tab-dispatch" class="nav-btn px-3 py-1.5 rounded transition flex items-center gap-1.5 text-textMuted hover:text-textLight hover:bg-panel border border-transparent">
+        <span>📡</span> <span>2. TECH UTILIZATION</span>
+        <span class="ml-1 px-1 rounded text-[9px] bg-panel text-accentCyan">88.6%</span>
+      </button>
+
+      <button onclick="switchTab('auditor')" id="tab-auditor" class="nav-btn px-3 py-1.5 rounded transition flex items-center gap-1.5 text-textMuted hover:text-textLight hover:bg-panel border border-transparent">
+        <span>🛡️</span> <span>3. AS/NZS 3000 QA AUDITOR</span>
+        <span class="ml-1 px-1 rounded text-[9px] bg-panel text-warnAmber">4 PENDING</span>
+      </button>
+
+      <button onclick="switchTab('quoter')" id="tab-quoter" class="nav-btn px-3 py-1.5 rounded transition flex items-center gap-1.5 text-textMuted hover:text-textLight hover:bg-panel border border-transparent">
+        <span>📐</span> <span>4. QUOTE &amp; COPPER CALCULATOR</span>
+      </button>
+
+      <button onclick="switchTab('accounts')" id="tab-accounts" class="nav-btn px-3 py-1.5 rounded transition flex items-center gap-1.5 text-textMuted hover:text-textLight hover:bg-panel border border-transparent">
+        <span>🏢</span> <span>5. ACCOUNT RADAR &amp; MOVERS</span>
+        <span class="ml-1 px-1 rounded text-[9px] bg-accentOrange/20 text-accentOrange border border-accentOrange/40">1 MOVER</span>
+      </button>
+    </div>
+
+    <!-- Sector Filter -->
+    <div class="hidden sm:flex items-center gap-2 text-[11px] text-textMuted pl-4 border-l border-panelBorder">
+      <span class="uppercase text-[9px] tracking-wider">Sector Focus:</span>
+      <select id="sectorSelect" onchange="filterSector(this.value)" class="bg-surface border border-panelBorder rounded px-2 py-1 text-textLight font-mono focus:border-accentCyan outline-none">
+        <option value="ALL">ALL SECTORS (Consolidated)</option>
+        <option value="COMMERCIAL">Commercial Facilities (CBD &amp; Retail)</option>
+        <option value="INDUSTRIAL">Industrial &amp; Infrastructure (Warehousing/Plants)</option>
+        <option value="CRITICAL">Critical &amp; Institutional (Health/Data Centers)</option>
+      </select>
+    </div>
+  </nav>
+
+  <!-- MAIN VIEW CONTAINER -->
+  <main class="p-4 md:p-6 max-w-7xl mx-auto space-y-6">
+
+    <!-- ========================================================================= -->
+    <!-- MODULE 1: MID-FLIGHT MARGIN SENTINEL -->
+    <!-- ========================================================================= -->
+    <section id="view-sentinel" class="space-y-6">
+      
+      <!-- Module Header Banner -->
+      <div class="p-4 rounded border border-panelBorder bg-surface flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <h2 class="text-base font-bold font-mono text-textLight tracking-wide">MID-FLIGHT MARGIN &amp; LABOUR BURN SENTINEL</h2>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-accentOrange/10 text-accentOrange border border-accentOrange/30">REAL-TIME COMMERCIAL CONTROL</span>
+          </div>
+          <p class="text-xs text-textMuted mt-1">
+            Directly solving: <span class="text-textLight font-mono">"Actively manage labour efficiency, job margins and commercial outcomes throughout delivery rather than relying solely on post-job review."</span>
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="openVariationModal()" class="px-3 py-1.5 rounded font-mono text-xs bg-accentOrange text-black font-semibold hover:bg-accentOrange/90 transition shadow-[0_0_12px_rgba(255,122,24,0.3)] flex items-center gap-1.5">
+            <span>+</span> <span>INJECT MID-FLIGHT VARIATION</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI Grid -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="p-3 rounded border border-panelBorder bg-panel">
+          <div class="text-[10px] font-mono text-textMuted uppercase">Active Jobs Under AM</div>
+          <div class="text-xl font-bold font-mono text-textLight mt-1">18 Jobs</div>
+          <div class="text-[10px] text-textMuted font-mono mt-0.5">14 On-Track · 2 At Risk · 2 Overrun</div>
+        </div>
+        <div class="p-3 rounded border border-panelBorder bg-panel">
+          <div class="text-[10px] font-mono text-textMuted uppercase">Live Blended Gross Margin</div>
+          <div class="text-xl font-bold font-mono text-signalGreen mt-1">39.1%</div>
+          <div class="text-[10px] text-textMuted font-mono mt-0.5">Target: 38.0% (+1.1% buffer)</div>
+        </div>
+        <div class="p-3 rounded border border-panelBorder bg-panel">
+          <div class="text-[10px] font-mono text-textMuted uppercase">Margin At Risk (Labour Drift)</div>
+          <div class="text-xl font-bold font-mono text-alertRed mt-1">-$6,420 AUD</div>
+          <div class="text-[10px] text-textMuted font-mono mt-0.5">Requires Immediate Scope Variation</div>
+        </div>
+        <div class="p-3 rounded border border-panelBorder bg-panel">
+          <div class="text-[10px] font-mono text-textMuted uppercase">Avg Billing Cycle Lag</div>
+          <div class="text-xl font-bold font-mono text-accentCyan mt-1">1.8 Days</div>
+          <div class="text-[10px] text-textMuted font-mono mt-0.5">Completed Job → Invoiced to Client</div>
+        </div>
+      </div>
+
+      <!-- Active Work Orders Table -->
+      <div class="rounded border border-panelBorder bg-surface overflow-hidden">
+        <div class="px-4 py-3 border-b border-panelBorder bg-panel/60 flex items-center justify-between">
+          <div class="font-mono font-semibold text-xs text-textLight flex items-center gap-2">
+            <span>LIVE WORK ORDER COCKPIT</span>
+            <span class="text-[10px] text-textMuted font-normal">(Ranked by Margin Slippage Risk)</span>
+          </div>
+          <span class="text-[10px] font-mono text-textMuted">Click any job to inspect labour breakdown &amp; issue variation</span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left font-mono text-xs">
+            <thead class="bg-void/80 text-[10px] uppercase text-textMuted border-b border-panelBorder">
+              <tr>
+                <th class="py-2.5 px-3">Job ID &amp; Site</th>
+                <th class="py-2.5 px-3">Client</th>
+                <th class="py-2.5 px-3">Sector</th>
+                <th class="py-2.5 px-3 text-right">Quoted Sell</th>
+                <th class="py-2.5 px-3">Labour Burn (Hrs)</th>
+                <th class="py-2.5 px-3">Materials</th>
+                <th class="py-2.5 px-3 text-right">Quoted GP</th>
+                <th class="py-2.5 px-3 text-right">Live GP</th>
+                <th class="py-2.5 px-3 text-center">Status</th>
+                <th class="py-2.5 px-3 text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody id="jobsTableBody" class="divide-y divide-panelBorder">
+              <!-- Dynamically populated via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tactical Deep-Dive: Selected Job Inspector -->
+      <div id="jobDetailCard" class="p-4 rounded border border-panelBorder bg-panel/90 space-y-4">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-panelBorder pb-3">
+          <div>
+            <div class="flex items-center gap-2">
+              <span id="detailJobId" class="font-mono font-bold text-accentCyan text-sm">WO-4092</span>
+              <span id="detailJobTitle" class="text-sm font-semibold text-textLight">Main Switchboard CT Metering &amp; Thermal Remediation</span>
+              <span id="detailSectorBadge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-panelBorder text-textMuted">COMMERCIAL</span>
+            </div>
+            <p id="detailClient" class="text-xs text-textMuted font-mono mt-0.5">Dexus Property Group · 180 Ann Street, Brisbane CBD · Lead Tech: Dave Miller</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-mono text-alertRed bg-alertRed/10 border border-alertRed/30 px-2 py-1 rounded">
+              ⚠️ CRITICAL: Labour at 94% with 30% cable pull remaining
+            </span>
+            <button onclick="openVariationModal('WO-4092')" class="px-3 py-1 rounded font-mono text-xs bg-accentCyan text-black font-semibold hover:bg-accentCyan/90 transition">
+              Draft Variation (+3.5 Hrs)
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-mono">
+          <!-- Labour Breakdown -->
+          <div class="p-3 rounded bg-void/60 border border-panelBorder">
+            <div class="text-[10px] text-textMuted uppercase mb-1 flex justify-between">
+              <span>Labour Hours Burned</span>
+              <span class="text-alertRed font-bold">15.0 / 16.0 hrs (93.7%)</span>
+            </div>
+            <div class="w-full bg-panelBorder h-2 rounded-full overflow-hidden">
+              <div class="bg-alertRed h-full w-[94%]"></div>
+            </div>
+            <div class="mt-2 text-[11px] text-textMuted space-y-1">
+              <div class="flex justify-between"><span>Dave Miller (Senior Sparky):</span> <span class="text-textLight">9.0 hrs @ $120/hr</span></div>
+              <div class="flex justify-between"><span>Sam Taylor (3rd Yr Apprentice):</span> <span class="text-textLight">6.0 hrs @ $65/hr</span></div>
+              <div class="flex justify-between text-alertRed"><span>Bottleneck:</span> <span>Riser cable obstruction on Lvl 14</span></div>
+            </div>
+          </div>
+
+          <!-- Material Costs -->
+          <div class="p-3 rounded bg-void/60 border border-panelBorder">
+            <div class="text-[10px] text-textMuted uppercase mb-1 flex justify-between">
+              <span>Materials Incurred</span>
+              <span class="text-signalGreen font-bold">$2,840 / $3,200 (88.7%)</span>
+            </div>
+            <div class="w-full bg-panelBorder h-2 rounded-full overflow-hidden">
+              <div class="bg-signalGreen h-full w-[88%]"></div>
+            </div>
+            <div class="mt-2 text-[11px] text-textMuted space-y-1">
+              <div class="flex justify-between"><span>Schneider NSX400 Breaker:</span> <span class="text-textLight">$1,850 (PO-8812)</span></div>
+              <div class="flex justify-between"><span>95mm² 4C+E Orange Circular:</span> <span class="text-textLight">$740 (Rexel)</span></div>
+              <div class="flex justify-between"><span>Sundries / Lug terminals:</span> <span class="text-textLight">$250</span></div>
+            </div>
+          </div>
+
+          <!-- Commercial Outcome Matrix -->
+          <div class="p-3 rounded bg-void/60 border border-panelBorder">
+            <div class="text-[10px] text-textMuted uppercase mb-1">Live Profitability Outlook</div>
+            <div class="space-y-1 text-[11px]">
+              <div class="flex justify-between"><span>Original Quoted Sell:</span> <span class="text-textLight font-bold">$7,450.00</span></div>
+              <div class="flex justify-between"><span>Current Direct Costs:</span> <span class="text-textLight">$4,310.00</span></div>
+              <div class="flex justify-between"><span>Original Margin Target:</span> <span class="text-textLight">42.1% ($3,140)</span></div>
+              <div class="flex justify-between border-t border-panelBorder pt-1 text-alertRed font-bold">
+                <span>Projected Margin If Uncorrected:</span> <span>29.4% (-12.7% slippage)</span>
+              </div>
+              <div class="text-[10px] text-accentCyan mt-1">
+                → Recommended AM Action: Bill Variation VO-1 ($840) to restore GP to 39.8%.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- MODULE 2: TECHNICIAN UTILIZATION & ZERO-DOWNTIME DISPATCH BOARD -->
+    <!-- ========================================================================= -->
+    <section id="view-dispatch" class="hidden space-y-6">
+      
+      <div class="p-4 rounded border border-panelBorder bg-surface flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <h2 class="text-base font-bold font-mono text-textLight tracking-wide">TECHNICIAN UTILIZATION &amp; DOWNTIME ELIMINATOR</h2>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-accentCyan/10 text-accentCyan border border-accentCyan/30">SERVICE COORDINATOR CO-PILOT</span>
+          </div>
+          <p class="text-xs text-textMuted mt-1">
+            Directly solving: <span class="text-textLight font-mono">"Actively reduce avoidable non-billable downtime by reviewing schedules, planning ahead and ensuring technicians remain productively allocated."</span>
+          </p>
+        </div>
+        <div class="flex items-center gap-3 font-mono text-xs">
+          <div class="px-3 py-1 rounded bg-panel border border-panelBorder">
+            <span class="text-textMuted text-[10px] block">TODAY'S FLEET UTILIZATION</span>
+            <span class="text-signalGreen font-bold text-base">88.6%</span> <span class="text-textMuted text-[10px]">Target &gt;85%</span>
+          </div>
+          <div class="px-3 py-1 rounded bg-panel border border-panelBorder">
+            <span class="text-textMuted text-[10px] block">NON-BILLABLE HOURS SAVED TODAY</span>
+            <span class="text-accentCyan font-bold text-base">6.5 hrs</span> <span class="text-textMuted text-[10px]">($780 Revenue Protected)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Action: Emergency Downtime Absorber -->
+      <div class="p-3 rounded border border-accentOrange/40 bg-accentOrange/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono">
+        <div class="flex items-center gap-2">
+          <span class="text-base">🚨</span>
+          <div>
+            <span class="text-accentOrange font-bold">LIVE DOWNTIME ALERT:</span>
+            <span class="text-textLight"> Marcus Vance (Service Tech) blocked at 240 Queen St (Building access induction delay, est. 90 min delay).</span>
+          </div>
+        </div>
+        <button onclick="absorbDowntime('Marcus Vance')" class="px-3 py-1.5 rounded bg-accentOrange text-black font-semibold hover:bg-accentOrange/90 transition text-xs whitespace-nowrap shadow-[0_0_10px_rgba(255,122,24,0.3)]">
+          ⚡ 1-Click Reroute to Nearby RCD Test (Post Office Sq)
+        </button>
+      </div>
+
+      <!-- Technician Live Fleet Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="techGrid">
+        <!-- Rendered via JS -->
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- MODULE 3: AS/NZS 3000 QA AUDITOR & NOTE CLOSEOUT GATE -->
+    <!-- ========================================================================= -->
+    <section id="view-auditor" class="hidden space-y-6">
+      
+      <div class="p-4 rounded border border-panelBorder bg-surface flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <h2 class="text-base font-bold font-mono text-textLight tracking-wide">TECHNICIAN NOTE AUDITOR &amp; AS/NZS 3000 COMPLIANCE GATE</h2>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-warnAmber/10 text-warnAmber border border-warnAmber/30">ZERO-DISPUTE INVOICE CLEARANCE</span>
+          </div>
+          <p class="text-xs text-textMuted mt-1">
+            Directly solving: <span class="text-textLight font-mono">"Review and audit technician job notes. Ensure jobs are completed and closed out promptly... identify training needs and maintain compliance."</span>
+          </p>
+        </div>
+        <div class="flex items-center gap-2 font-mono text-xs">
+          <span class="px-2 py-1 rounded bg-panel border border-panelBorder text-textMuted">Pending Audits: <strong class="text-warnAmber">4</strong></span>
+          <span class="px-2 py-1 rounded bg-panel border border-panelBorder text-textMuted">First-Time Pass Rate: <strong class="text-signalGreen">92.4%</strong></span>
+        </div>
+      </div>
+
+      <!-- Audit Queue Cards -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4" id="auditQueueContainer">
+        <!-- Rendered via JS -->
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- MODULE 4: QUOTE ESTIMATOR WITH COPPER INDEXING -->
+    <!-- ========================================================================= -->
+    <section id="view-quoter" class="hidden space-y-6">
+      
+      <div class="p-4 rounded border border-panelBorder bg-surface flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <h2 class="text-base font-bold font-mono text-textLight tracking-wide">QUOTE &amp; COPPER-INDEXED MARGIN CALCULATOR</h2>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-accentCyan/10 text-accentCyan border border-accentCyan/30">CRUCIBLE ESTIMATING ENGINE</span>
+          </div>
+          <p class="text-xs text-textMuted mt-1">
+            Directly solving: <span class="text-textLight font-mono">"Prepare accurate and competitive quotations in a timely manner... Monitor job margins and cost control."</span>
+          </p>
+        </div>
+        <div class="font-mono text-xs text-textMuted flex items-center gap-2">
+          <span>Copper Index Base:</span>
+          <span class="text-accentOrange font-semibold">$9,240 USD/tonne</span>
+          <span class="px-1.5 py-0.5 rounded bg-panel text-[10px]">Real-time LME Link</span>
+        </div>
+      </div>
+
+      <!-- Estimator Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Left: Inputs -->
+        <div class="lg:col-span-2 rounded border border-panelBorder bg-surface p-4 space-y-4">
+          <div class="font-mono font-semibold text-xs text-textLight border-b border-panelBorder pb-2">
+            SCOPE &amp; RESOURCING PARAMETERS
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-[11px] font-mono text-textMuted mb-1">Target Client</label>
+              <input type="text" id="quoteClient" value="JLL Facilities · 100 Creek Street" class="w-full bg-panel border border-panelBorder rounded px-3 py-1.5 font-mono text-xs text-textLight focus:border-accentCyan outline-none">
+            </div>
+            <div>
+              <label class="block text-[11px] font-mono text-textMuted mb-1">Work Classification</label>
+              <select id="quoteCategory" onchange="recalculateQuote()" class="w-full bg-panel border border-panelBorder rounded px-3 py-1.5 font-mono text-xs text-textLight focus:border-accentCyan outline-none">
+                <option value="COMM_BOARD">Commercial Main Switchboard Remediation</option>
+                <option value="FITOUT">Tenancy Sub-Circuits &amp; Lighting Fitout</option>
+                <option value="IND_FEEDER">Industrial Feeder &amp; Motor Control Center</option>
+                <option value="STATUTORY">Statutory RCD &amp; Emergency Lighting Audit</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Labour Calculator -->
+          <div class="p-3 rounded bg-panel/60 border border-panelBorder space-y-3">
+            <div class="font-mono text-[11px] font-semibold text-textLight uppercase">Labour Resource Planning</div>
+            <div class="grid grid-cols-3 gap-3 font-mono text-xs">
+              <div>
+                <label class="block text-[10px] text-textMuted">Senior Sparky ($125/hr)</label>
+                <div class="flex items-center gap-2 mt-1">
+                  <input type="number" id="hrsSenior" value="12" oninput="recalculateQuote()" class="w-full bg-void border border-panelBorder rounded px-2 py-1 text-center text-textLight">
+                  <span class="text-textMuted text-[10px]">hrs</span>
+                </div>
+              </div>
+              <div>
+                <label class="block text-[10px] text-textMuted">Apprentice ($65/hr)</label>
+                <div class="flex items-center gap-2 mt-1">
+                  <input type="number" id="hrsApprentice" value="8" oninput="recalculateQuote()" class="w-full bg-void border border-panelBorder rounded px-2 py-1 text-center text-textLight">
+                  <span class="text-textMuted text-[10px]">hrs</span>
+                </div>
+              </div>
+              <div>
+                <label class="block text-[10px] text-textMuted">Service Truck / Admin ($45)</label>
+                <div class="flex items-center gap-2 mt-1">
+                  <input type="number" id="hrsTruck" value="2" oninput="recalculateQuote()" class="w-full bg-void border border-panelBorder rounded px-2 py-1 text-center text-textLight">
+                  <span class="text-textMuted text-[10px]">trips</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Materials & Copper Cable Sizing -->
+          <div class="p-3 rounded bg-panel/60 border border-panelBorder space-y-3">
+            <div class="font-mono text-[11px] font-semibold text-textLight uppercase flex justify-between">
+              <span>Copper Cable &amp; Materials Bill of Quantities</span>
+              <span class="text-[10px] text-accentOrange">LME-Hedging Adjustment: +3.2%</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono text-xs">
+              <div>
+                <label class="block text-[10px] text-textMuted">Cable Run (m) - 70mm²</label>
+                <input type="number" id="cableMeters" value="45" oninput="recalculateQuote()" class="w-full mt-1 bg-void border border-panelBorder rounded px-2 py-1 text-center text-textLight">
+              </div>
+              <div>
+                <label class="block text-[10px] text-textMuted">Switchgear / Breakers ($)</label>
+                <input type="number" id="switchgearCost" value="1850" oninput="recalculateQuote()" class="w-full mt-1 bg-void border border-panelBorder rounded px-2 py-1 text-center text-textLight">
+              </div>
+              <div>
+                <label class="block text-[10px] text-textMuted">Consumables &amp; Containment ($)</label>
+                <input type="number" id="consumablesCost" value="480" oninput="recalculateQuote()" class="w-full mt-1 bg-void border border-panelBorder rounded px-2 py-1 text-center text-textLight">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Live Commercial Breakdown -->
+        <div class="rounded border border-panelBorder bg-panel p-4 flex flex-col justify-between space-y-4 font-mono">
+          <div>
+            <div class="font-semibold text-xs text-textLight border-b border-panelBorder pb-2 flex justify-between">
+              <span>COMMERCIAL PROPOSAL SUMMARY</span>
+              <span class="text-accentCyan">QUOTE #Q-2026-88</span>
+            </div>
+
+            <div class="mt-4 space-y-2 text-xs">
+              <div class="flex justify-between text-textMuted">
+                <span>Direct Labour Cost:</span>
+                <span id="summaryLabour" class="text-textLight">$2,110.00</span>
+              </div>
+              <div class="flex justify-between text-textMuted">
+                <span>Materials &amp; Copper:</span>
+                <span id="summaryMaterials" class="text-textLight">$3,620.00</span>
+              </div>
+              <div class="flex justify-between text-textMuted">
+                <span>Vehicle &amp; Plant:</span>
+                <span id="summaryPlant" class="text-textLight">$90.00</span>
+              </div>
+              <div class="border-t border-panelBorder pt-1 flex justify-between font-semibold">
+                <span>Total Prime Cost:</span>
+                <span id="summaryPrimeCost" class="text-textLight">$5,820.00</span>
+              </div>
+
+              <div class="pt-3">
+                <div class="flex justify-between text-[11px] mb-1">
+                  <span>Target Gross Margin:</span>
+                  <span id="summaryGPPercent" class="text-signalGreen font-bold text-sm">39.2%</span>
+                </div>
+                <div class="w-full bg-void h-2 rounded-full overflow-hidden border border-panelBorder">
+                  <div id="summaryGPBar" class="bg-signalGreen h-full w-[39%]"></div>
+                </div>
+              </div>
+
+              <div class="border-t border-panelBorder pt-3 flex justify-between items-baseline">
+                <span class="text-xs uppercase text-textMuted">Client Sell Price (ex GST):</span>
+                <span id="summarySellPrice" class="text-xl font-bold text-accentCyan">$9,572.37</span>
+              </div>
+              <div class="flex justify-between text-[10px] text-textMuted">
+                <span>Inc. GST (10%):</span>
+                <span id="summarySellIncGST" class="text-textLight">$10,529.61</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-panelBorder space-y-2">
+            <button onclick="saveAndSendQuote()" class="w-full py-2 rounded bg-signalGreen text-black font-bold text-xs hover:bg-signalGreen/90 transition shadow-[0_0_12px_rgba(0,230,118,0.3)] flex items-center justify-center gap-1.5">
+              <span>✓</span> <span>APPROVE &amp; DISPATCH QUOTE TO CLIENT</span>
+            </button>
+            <p class="text-[10px] text-textMuted text-center">Auto-sets follow-up reminder in 72 hours per JD protocol</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- MODULE 5: ACCOUNT RADAR, STATUTORY RECURRENCE & MOVER RADAR -->
+    <!-- ========================================================================= -->
+    <section id="view-accounts" class="hidden space-y-6">
+      
+      <div class="p-4 rounded border border-panelBorder bg-surface flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <h2 class="text-base font-bold font-mono text-textLight tracking-wide">CLIENT ACCOUNT HEALTH &amp; CONTACT MOVER RADAR</h2>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-accentOrange/10 text-accentOrange border border-accentOrange/30">ORGANIC REVENUE EXPANSION</span>
+          </div>
+          <p class="text-xs text-textMuted mt-1">
+            Directly solving: <span class="text-textLight font-mono">"Where key client contacts move organisations, actively pursue continuation of the relationship... Proactively identify opportunities for additional service offerings."</span>
+          </p>
+        </div>
+        <div class="font-mono text-xs flex items-center gap-2">
+          <span class="px-2 py-1 rounded bg-panel border border-panelBorder text-textMuted">Client Retention: <strong class="text-signalGreen">96.8%</strong></span>
+          <span class="px-2 py-1 rounded bg-panel border border-panelBorder text-textMuted">Cross-Sell Pipeline: <strong class="text-accentCyan">$142,500</strong></span>
+        </div>
+      </div>
+
+      <!-- High-Priority Contact Mover Alert -->
+      <div class="p-4 rounded border border-accentOrange/60 bg-accentOrange/10 space-y-3 font-mono text-xs">
+        <div class="flex items-start justify-between gap-4">
+          <div class="flex items-start gap-3">
+            <span class="text-2xl">👤</span>
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-accentOrange text-sm">KEY CONTACT MOVER DETECTED</span>
+                <span class="text-[10px] bg-accentOrange/20 border border-accentOrange/40 text-accentOrange px-1.5 py-0.5 rounded">NEW PORTFOLIO OPPORTUNITY</span>
+              </div>
+              <p class="text-textLight mt-1">
+                <strong>Sarah Jenkins (Senior Facilities Manager)</strong> has moved from <strong>CBRE (123 Eagle St)</strong> to <strong>Dexus (Brisbane Waterfront Precinct)</strong>.
+              </p>
+              <p class="text-textMuted text-[11px] mt-0.5">
+                Past relationship rating: 9.8/10 · Previous annual spend: $84,000 across 3 office towers.
+              </p>
+            </div>
+          </div>
+          <button onclick="openMoverCampaign()" class="px-3 py-1.5 rounded bg-accentOrange text-black font-bold text-xs hover:bg-accentOrange/90 transition whitespace-nowrap shadow-[0_0_10px_rgba(255,122,24,0.3)]">
+            ⚡ Launch Account Transition Outreach
+          </button>
+        </div>
+      </div>
+
+      <!-- Statutory Maintenance & Compliance Recurrence Tracker -->
+      <div class="rounded border border-panelBorder bg-surface overflow-hidden font-mono text-xs">
+        <div class="px-4 py-3 border-b border-panelBorder bg-panel/60 flex items-center justify-between">
+          <span class="font-semibold text-textLight">STATUTORY RECURRING COMPLIANCE CALENDAR (AS/NZS 3000, AS 2293, AS 3760)</span>
+          <span class="text-[10px] text-textMuted">Automated upsell generator for preventive maintenance contracts</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left">
+            <thead class="bg-void/80 text-[10px] uppercase text-textMuted border-b border-panelBorder">
+              <tr>
+                <th class="py-2.5 px-3">Account / Building</th>
+                <th class="py-2.5 px-3">Sector</th>
+                <th class="py-2.5 px-3">Statutory Test Type</th>
+                <th class="py-2.5 px-3">Standard</th>
+                <th class="py-2.5 px-3">Last Completed</th>
+                <th class="py-2.5 px-3">Expiry / Due</th>
+                <th class="py-2.5 px-3 text-right">Est. Value</th>
+                <th class="py-2.5 px-3 text-center">Status</th>
+                <th class="py-2.5 px-3 text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody id="recurringTableBody" class="divide-y divide-panelBorder">
+              <!-- Dynamically populated via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: MID-FLIGHT VARIATION GENERATOR -->
+  <!-- ========================================================================= -->
+  <div id="variationModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-surface border border-panelBorder rounded-lg max-w-lg w-full p-5 font-mono text-xs space-y-4 shadow-[0_0_30px_rgba(0,229,255,0.15)]">
+      <div class="flex items-center justify-between border-b border-panelBorder pb-3">
+        <div>
+          <span class="font-bold text-sm text-textLight">INJECT MID-FLIGHT VARIATION (VO)</span>
+          <p class="text-[10px] text-textMuted mt-0.5">Protect margin while technician is still on site</p>
+        </div>
+        <button onclick="closeModal('variationModal')" class="text-textMuted hover:text-textLight text-base">✕</button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-[10px] text-textMuted uppercase mb-1">Target Work Order</label>
+          <select id="varJobSelect" class="w-full bg-panel border border-panelBorder rounded px-3 py-1.5 text-textLight">
+            <option value="WO-4092">WO-4092 · Dexus 180 Ann St · Main Switchboard CT Metering</option>
+            <option value="WO-4095">WO-4095 · Port of Brisbane Cold Storage · VSD Replacement</option>
+            <option value="WO-4098">WO-4098 · Mater Private Hospital · Operating Theatre Isolation</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[10px] text-textMuted uppercase mb-1">Additional Labour (Hrs)</label>
+            <input type="number" id="varLabourHrs" value="3.5" class="w-full bg-panel border border-panelBorder rounded px-3 py-1.5 text-textLight">
+          </div>
+          <div>
+            <label class="block text-[10px] text-textMuted uppercase mb-1">Extra Materials Cost ($)</label>
+            <input type="number" id="varMaterialCost" value="340.00" class="w-full bg-panel border border-panelBorder rounded px-3 py-1.5 text-textLight">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[10px] text-textMuted uppercase mb-1">Reason / Site Obstruction Description</label>
+          <textarea id="varReason" rows="2" class="w-full bg-panel border border-panelBorder rounded px-3 py-1.5 text-textLight">Cable riser duct obstructed by legacy HVAC ducting on Lvl 14. Requires core-hole bypass and extended 95mm² run.</textarea>
+        </div>
+
+        <div class="p-3 rounded bg-void border border-panelBorder space-y-1">
+          <div class="flex justify-between text-[11px]">
+            <span>Recommended Client Variation Price:</span>
+            <span class="text-signalGreen font-bold">$845.00 + GST</span>
+          </div>
+          <div class="flex justify-between text-[10px] text-textMuted">
+            <span>Resulting Job Margin After Variation:</span>
+            <span class="text-accentCyan font-semibold">39.8% (Protects target!)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2 border-t border-panelBorder">
+        <button onclick="closeModal('variationModal')" class="px-3 py-1.5 rounded bg-panel hover:bg-panelBorder text-textMuted hover:text-textLight">Cancel</button>
+        <button onclick="submitVariation()" class="px-4 py-1.5 rounded bg-accentOrange text-black font-bold hover:bg-accentOrange/90 transition shadow-[0_0_10px_rgba(255,122,24,0.3)]">
+          Authorize &amp; Send to Client FM
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: CONTACT MOVER OUTREACH GENERATOR -->
+  <!-- ========================================================================= -->
+  <div id="moverModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-surface border border-panelBorder rounded-lg max-w-lg w-full p-5 font-mono text-xs space-y-4 shadow-[0_0_30px_rgba(255,122,24,0.15)]">
+      <div class="flex items-center justify-between border-b border-panelBorder pb-3">
+        <div>
+          <span class="font-bold text-sm text-accentOrange">KEY CONTACT TRANSITION PROPOSAL</span>
+          <p class="text-[10px] text-textMuted mt-0.5">Generated for Sarah Jenkins · New Senior FM at Dexus Waterfront</p>
+        </div>
+        <button onclick="closeModal('moverModal')" class="text-textMuted hover:text-textLight text-base">✕</button>
+      </div>
+
+      <div class="p-3 rounded bg-void border border-panelBorder text-textLight space-y-2 text-[11px] leading-relaxed">
+        <p><strong>To:</strong> sarah.jenkins@dexus.com</p>
+        <p><strong>Subject:</strong> Congratulations on your new role at Dexus Waterfront // Continued Electrical Support</p>
+        <p class="border-t border-panelBorder pt-2 text-textMuted">
+          "Hi Sarah,<br><br>
+          Congratulations on the transition to overseeing the Dexus Waterfront portfolio! It was a pleasure partnering with you on the 123 Eagle St maintenance upgrades over the past 2 years.<br><br>
+          As you settle into the new site assets, I’d love to buy you a coffee next week to run through the current switchboard thermal history and emergency lighting audit status across the Waterfront buildings to give you immediate peace of mind.<br><br>
+          Looking forward to catching up soon."<br><br>
+          <strong>Tobias Hall</strong> | Account Manager<br>
+          0406 556 499
+        </p>
+      </div>
+
+      <div class="flex justify-between items-center pt-2 border-t border-panelBorder">
+        <span class="text-[10px] text-signalGreen">✓ Pre-drafted with client history</span>
+        <button onclick="closeModal('moverModal'); alert('Outreach dispatched via Email and CRM logged!')" class="px-4 py-1.5 rounded bg-accentCyan text-black font-bold hover:bg-accentCyan/90 transition shadow-[0_0_10px_rgba(0,229,255,0.3)]">
+          Copy &amp; Dispatch Outreach
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPT ENGINE -->
+  <script>
+    // Live Clock
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('liveClock').textContent = 
+        now.toTimeString().split(' ')[0] + ' AEST';
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Data Sets: Active Work Orders
+    const jobsData = [
+      {
+        id: 'WO-4092',
+        title: 'MSB CT Metering & Remediation',
+        client: 'Dexus Property Group',
+        site: '180 Ann St, Brisbane CBD',
+        sector: 'COMMERCIAL',
+        quotedSell: 7450,
+        hrsQuoted: 16,
+        hrsLogged: 15.0,
+        leadTech: 'Dave Miller',
+        materialsCost: 2840,
+        materialsBudget: 3200,
+        quotedGP: 42.1,
+        liveGP: 29.4,
+        status: 'CRITICAL',
+        statusText: 'Labour Burn 94%'
+      },
+      {
+        id: 'WO-4095',
+        title: 'VSD Drive Replacement (Cooling Chiller 2)',
+        client: 'Port of Brisbane Cold Storage',
+        site: 'Wharf 4 Logistics, Port of QLD',
+        sector: 'INDUSTRIAL',
+        quotedSell: 14200,
+        hrsQuoted: 24,
+        hrsLogged: 18.5,
+        leadTech: 'Liam Ryan',
+        materialsCost: 6800,
+        materialsBudget: 7200,
+        quotedGP: 38.5,
+        liveGP: 37.8,
+        status: 'ON_TRACK',
+        statusText: 'On Schedule'
+      },
+      {
+        id: 'WO-4098',
+        title: 'Emergency Generator Interlock & ATS Testing',
+        client: 'Mater Private Hospital',
+        site: 'South Brisbane Hospital Precinct',
+        sector: 'CRITICAL',
+        quotedSell: 9800,
+        hrsQuoted: 18,
+        hrsLogged: 16.5,
+        leadTech: 'Chris Evans',
+        materialsCost: 2400,
+        materialsBudget: 2500,
+        quotedGP: 44.0,
+        liveGP: 41.2,
+        status: 'ON_TRACK',
+        statusText: 'Final Testing'
+      },
+      {
+        id: 'WO-4101',
+        title: 'Level 8 Tenancy Power & Data Fitout',
+        client: 'CBRE Facilities',
+        site: '175 Eagle Street, Brisbane',
+        sector: 'COMMERCIAL',
+        quotedSell: 18500,
+        hrsQuoted: 40,
+        hrsLogged: 36.0,
+        leadTech: 'Marcus Vance',
+        materialsCost: 7100,
+        materialsBudget: 7000,
+        quotedGP: 39.0,
+        liveGP: 32.1,
+        status: 'WARN',
+        statusText: 'Labour At 90%'
+      },
+      {
+        id: 'WO-4104',
+        title: 'Switchboard Thermographic Scanning & Remediation',
+        client: 'Goodman Industrial Estate',
+        site: 'Eagle Farm Logistics Hub',
+        sector: 'INDUSTRIAL',
+        quotedSell: 5200,
+        hrsQuoted: 10,
+        hrsLogged: 6.0,
+        leadTech: 'Dave Miller',
+        materialsCost: 650,
+        materialsBudget: 800,
+        quotedGP: 48.0,
+        liveGP: 49.2,
+        status: 'HEALTHY',
+        statusText: 'Completed Ahead'
+      }
+    ];
+
+    // Technicians Data
+    const techData = [
+      {
+        name: 'Dave Miller',
+        role: 'Senior Electrician · Dual Trade',
+        status: 'BILLABLE',
+        currentSite: '180 Ann St, Brisbane (Dexus)',
+        jobId: 'WO-4092',
+        billableHours: '6.5 / 7.5 hrs',
+        utilization: '86.7%',
+        certifications: 'AS/NZS 3000, CPR/LVR, EEHA Hazardous Areas'
+      },
+      {
+        name: 'Marcus Vance',
+        role: 'Service Electrician',
+        status: 'BLOCKED',
+        currentSite: '240 Queen St (Building induction delay)',
+        jobId: 'WO-4101',
+        billableHours: '4.0 / 7.5 hrs',
+        utilization: '53.3%',
+        certifications: 'AS/NZS 3000, White Card, Working at Heights'
+      },
+      {
+        name: 'Liam Ryan',
+        role: 'Industrial Systems Tech',
+        status: 'BILLABLE',
+        currentSite: 'Port of Brisbane Cold Storage',
+        jobId: 'WO-4095',
+        billableHours: '7.0 / 7.5 hrs',
+        utilization: '93.3%',
+        certifications: 'AS/NZS 3000, High Voltage Switching, PLC Controls'
+      },
+      {
+        name: 'Sam Taylor',
+        role: '3rd Year Electrical Apprentice',
+        status: 'BILLABLE',
+        currentSite: '180 Ann St (Paired with Dave Miller)',
+        jobId: 'WO-4092',
+        billableHours: '6.5 / 7.5 hrs',
+        utilization: '86.7%',
+        certifications: 'Cert II Electrotechnology, White Card'
+      },
+      {
+        name: 'Chris Evans',
+        role: 'Senior Hospital/Critical Tech',
+        status: 'BILLABLE',
+        currentSite: 'Mater Private Hospital, South Brisbane',
+        jobId: 'WO-4098',
+        billableHours: '7.2 / 7.5 hrs',
+        utilization: '96.0%',
+        certifications: 'AS/NZS 3003 Patient Areas, Medical Gas Interlock'
+      },
+      {
+        name: 'Jake Reynolds',
+        role: 'Service Tech (Mobile Fleet)',
+        status: 'TRANSIT',
+        currentSite: 'En Route to South Bank Cultural Precinct',
+        jobId: 'WO-4110',
+        billableHours: '5.5 / 7.5 hrs',
+        utilization: '73.3%',
+        certifications: 'AS/NZS 3000, Commercial RCD & Thermal Scanning'
+      }
+    ];
+
+    // Audit Queue Data
+    const auditData = [
+      {
+        jobId: 'WO-4089',
+        site: 'Dexus 180 Ann St · Lvl 12 DB Clean & Relabel',
+        tech: 'Sam Taylor (Apprentice)',
+        timeLogged: '4.5 hrs',
+        originalNote: '"Replaced 3x 16A RCBOs, cleaned cabinet, all working fine."',
+        status: 'REJECTED_ONCE',
+        complianceChecks: {
+          megger: 'PASS (48 MΩ)',
+          earthContinuity: 'PASS (0.18 Ω)',
+          rcdTrip: 'FAIL (Missing trip time in ms)',
+          isolationPhoto: 'PASS (LOTO Tag #410 verified)'
+        },
+        amActionNeeded: 'Request RCD trip test sheet (AS 3760 / AS 3000)'
+      },
+      {
+        jobId: 'WO-4090',
+        site: 'Port of Brisbane · Substation 2 Exhaust Fan Overhaul',
+        tech: 'Liam Ryan',
+        timeLogged: '6.0 hrs',
+        originalNote: '"Motor rewound and reinstalled. Verified phase rotation (L1-L2-L3 clockwise). Full load current 14.2A balanced across all 3 phases. Thermal scan normal."',
+        status: 'READY_TO_INVOICE',
+        complianceChecks: {
+          megger: 'PASS (120 MΩ)',
+          earthContinuity: 'PASS (0.09 Ω)',
+          rcdTrip: 'N/A (3-phase direct motor)',
+          isolationPhoto: 'PASS (Permit to work signed by Terminal Mgr)'
+        },
+        amActionNeeded: 'Approve for Finance Invoicing ($3,840.00)'
+      }
+    ];
+
+    // Recurring Compliance Data
+    const recurringData = [
+      {
+        account: 'Dexus · 180 Ann Street',
+        sector: 'COMMERCIAL',
+        testType: 'Emergency Light 90-Min Discharge Test',
+        standard: 'AS/NZS 2293.2',
+        lastDone: '24/05/2026',
+        dueDate: '24/11/2026',
+        daysLeft: 1,
+        estValue: '$4,800',
+        status: 'URGENT'
+      },
+      {
+        account: 'Mater Health · South Brisbane',
+        sector: 'CRITICAL',
+        testType: 'Cardiac & Patient Area Earth Bond Testing',
+        standard: 'AS/NZS 3003',
+        lastDone: '15/12/2025',
+        dueDate: '15/12/2026',
+        daysLeft: 22,
+        estValue: '$12,400',
+        status: 'SCHEDULED'
+      },
+      {
+        account: 'Goodman · Eagle Farm Industrial',
+        sector: 'INDUSTRIAL',
+        testType: 'Annual Switchboard Thermographic Scan',
+        standard: 'AS/NZS 3000 / Insurance',
+        lastDone: '10/01/2026',
+        dueDate: '10/01/2027',
+        daysLeft: 48,
+        estValue: '$3,600',
+        status: 'UPCOMING'
+      },
+      {
+        account: 'CBRE · 175 Eagle Street',
+        sector: 'COMMERCIAL',
+        testType: '6-Monthly Push-Button RCD Testing',
+        standard: 'AS/NZS 3760',
+        lastDone: '02/06/2026',
+        dueDate: '02/12/2026',
+        daysLeft: 9,
+        estValue: '$2,950',
+        status: 'UPCOMING'
+      }
+    ];
+
+    // Render Active Jobs Table
+    function renderJobs(sectorFilter = 'ALL') {
+      const tbody = document.getElementById('jobsTableBody');
+      tbody.innerHTML = '';
+
+      const filtered = sectorFilter === 'ALL' 
+        ? jobsData 
+        : jobsData.filter(j => j.sector === sectorFilter);
+
+      filtered.forEach(j => {
+        let statusBadge = '';
+        if (j.status === 'CRITICAL') {
+          statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-alertRed/20 text-alertRed border border-alertRed/40">CRITICAL SLIP</span>';
+        } else if (j.status === 'WARN') {
+          statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-warnAmber/20 text-warnAmber border border-warnAmber/40">WATCH MARGIN</span>';
+        } else {
+          statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-signalGreen/20 text-signalGreen border border-signalGreen/40">HEALTHY</span>';
+        }
+
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-panel/70 transition cursor-pointer';
+        tr.onclick = () => selectJob(j.id);
+        tr.innerHTML = `
+          <td class="py-2.5 px-3">
+            <span class="font-bold text-accentCyan">${j.id}</span>
+            <div class="text-[10px] text-textMuted">${j.title}</div>
+          </td>
+          <td class="py-2.5 px-3 text-textLight font-semibold">${j.client}</td>
+          <td class="py-2.5 px-3"><span class="px-1.5 py-0.5 rounded bg-panel border border-panelBorder text-[9px]">${j.sector}</span></td>
+          <td class="py-2.5 px-3 text-right font-bold text-textLight">$${j.quotedSell.toLocaleString()}</td>
+          <td class="py-2.5 px-3">
+            <div class="flex items-center gap-2">
+              <span>${j.hrsLogged} / ${j.hrsQuoted}h</span>
+              <div class="w-16 bg-void h-1.5 rounded-full overflow-hidden border border-panelBorder">
+                <div class="h-full ${j.hrsLogged >= j.hrsQuoted * 0.9 ? 'bg-alertRed' : 'bg-accentCyan'}" style="width: ${(j.hrsLogged/j.hrsQuoted)*100}%"></div>
+              </div>
+            </div>
+          </td>
+          <td class="py-2.5 px-3 text-[11px] text-textMuted">$${j.materialsCost} <span class="text-[9px]">(/ $${j.materialsBudget})</span></td>
+          <td class="py-2.5 px-3 text-right text-textMuted">${j.quotedGP}%</td>
+          <td class="py-2.5 px-3 text-right font-bold ${j.liveGP < 32 ? 'text-alertRed' : (j.liveGP < 36 ? 'text-warnAmber' : 'text-signalGreen')}">${j.liveGP}%</td>
+          <td class="py-2.5 px-3 text-center">${statusBadge}</td>
+          <td class="py-2.5 px-3 text-center">
+            <button onclick="event.stopPropagation(); openVariationModal('${j.id}')" class="px-2 py-1 rounded bg-panel hover:bg-panelBorder border border-panelBorder text-[10px] text-accentOrange hover:text-white transition">
+              + Variation
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Select Job Details
+    function selectJob(id) {
+      const job = jobsData.find(j => j.id === id);
+      if (!job) return;
+      document.getElementById('detailJobId').textContent = job.id;
+      document.getElementById('detailJobTitle').textContent = job.title;
+      document.getElementById('detailClient').textContent = `${job.client} · ${job.site} · Lead Tech: ${job.leadTech}`;
+      document.getElementById('detailSectorBadge').textContent = job.sector;
+    }
+
+    // Render Technicians Board
+    function renderTechs() {
+      const grid = document.getElementById('techGrid');
+      grid.innerHTML = '';
+
+      techData.forEach(t => {
+        let statusTag = '';
+        if (t.status === 'BILLABLE') {
+          statusTag = '<span class="px-2 py-0.5 rounded bg-signalGreen/20 text-signalGreen border border-signalGreen/40 text-[10px] font-bold">ON-TOOL (BILLABLE)</span>';
+        } else if (t.status === 'BLOCKED') {
+          statusTag = '<span class="px-2 py-0.5 rounded bg-alertRed/20 text-alertRed border border-alertRed/40 text-[10px] font-bold pulse-dot">ACCESS BLOCKED</span>';
+        } else {
+          statusTag = '<span class="px-2 py-0.5 rounded bg-accentCyan/20 text-accentCyan border border-accentCyan/40 text-[10px] font-bold">IN TRANSIT</span>';
+        }
+
+        const card = document.createElement('div');
+        card.className = 'p-4 rounded border border-panelBorder bg-panel/70 hud-border transition font-mono space-y-3';
+        card.innerHTML = `
+          <div class="flex items-start justify-between">
+            <div>
+              <span class="font-bold text-sm text-textLight">${t.name}</span>
+              <p class="text-[10px] text-textMuted">${t.role}</p>
+            </div>
+            ${statusTag}
+          </div>
+
+          <div class="space-y-1 text-xs">
+            <div class="text-textMuted text-[10px]">CURRENT LOCATION &amp; WORK ORDER:</div>
+            <div class="text-textLight font-semibold">${t.currentSite}</div>
+            <div class="text-accentCyan text-[11px]">${t.jobId}</div>
+          </div>
+
+          <div class="pt-2 border-t border-panelBorder flex justify-between items-center text-xs">
+            <div>
+              <span class="text-textMuted text-[10px] block">TODAY'S LOGGED TIME</span>
+              <span class="text-textLight font-bold">${t.billableHours}</span>
+            </div>
+            <div class="text-right">
+              <span class="text-textMuted text-[10px] block">UTILIZATION</span>
+              <span class="font-bold ${parseFloat(t.utilization) >= 85 ? 'text-signalGreen' : 'text-alertRed'}">${t.utilization}</span>
+            </div>
+          </div>
+
+          <div class="text-[9px] text-textMuted border-t border-panelBorder pt-2">
+            Licenses: ${t.certifications}
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    // Render Auditor Queue
+    function renderAudits() {
+      const container = document.getElementById('auditQueueContainer');
+      container.innerHTML = '';
+
+      auditData.forEach(a => {
+        const div = document.createElement('div');
+        div.className = 'p-4 rounded border border-panelBorder bg-surface space-y-3 font-mono text-xs';
+        div.innerHTML = `
+          <div class="flex justify-between items-start border-b border-panelBorder pb-2">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-accentCyan">${a.jobId}</span>
+                <span class="text-textLight font-semibold">${a.site}</span>
+              </div>
+              <p class="text-[11px] text-textMuted mt-0.5">Submitted by ${a.tech} · ${a.timeLogged} booked</p>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${a.status === 'READY_TO_INVOICE' ? 'bg-signalGreen/20 text-signalGreen border border-signalGreen/40' : 'bg-warnAmber/20 text-warnAmber border border-warnAmber/40'}">
+              ${a.status}
+            </span>
+          </div>
+
+          <div>
+            <span class="text-[10px] text-textMuted uppercase block mb-1">Technician Submitted Notes:</span>
+            <div class="p-2.5 rounded bg-void border border-panelBorder text-textLight italic text-[11px]">
+              ${a.originalNote}
+            </div>
+          </div>
+
+          <div class="space-y-1.5 pt-1">
+            <span class="text-[10px] text-textMuted uppercase block">AS/NZS 3000 &amp; Safety Compliance Verification:</span>
+            <div class="grid grid-cols-2 gap-2 text-[10px]">
+              <div class="p-1.5 rounded bg-panel border border-panelBorder flex justify-between">
+                <span>Insulation Resistance (Megger):</span>
+                <span class="font-bold text-signalGreen">${a.complianceChecks.megger}</span>
+              </div>
+              <div class="p-1.5 rounded bg-panel border border-panelBorder flex justify-between">
+                <span>Earth Continuity (&lt;0.5Ω):</span>
+                <span class="font-bold text-signalGreen">${a.complianceChecks.earthContinuity}</span>
+              </div>
+              <div class="p-1.5 rounded bg-panel border border-panelBorder flex justify-between">
+                <span>RCD Push / Injection:</span>
+                <span class="font-bold ${a.complianceChecks.rcdTrip.includes('FAIL') ? 'text-alertRed' : 'text-signalGreen'}">${a.complianceChecks.rcdTrip}</span>
+              </div>
+              <div class="p-1.5 rounded bg-panel border border-panelBorder flex justify-between">
+                <span>LOTO &amp; Isolation Photo:</span>
+                <span class="font-bold text-signalGreen">${a.complianceChecks.isolationPhoto}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-panelBorder flex justify-between items-center">
+            <span class="text-[10px] text-accentOrange">${a.amActionNeeded}</span>
+            <div class="flex items-center gap-2">
+              <button onclick="alert('Returned to technician with required testing fields specified.')" class="px-3 py-1 rounded bg-panel hover:bg-panelBorder text-alertRed font-semibold text-xs border border-panelBorder">
+                Reject &amp; Request Data
+              </button>
+              <button onclick="alert('Audit passed! Job closed and pushed to Finance for invoice dispatch.')" class="px-3 py-1 rounded bg-signalGreen text-black font-bold text-xs hover:bg-signalGreen/90">
+                ✓ Approve for Invoicing
+              </button>
+            </div>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    // Render Recurring Compliance Table
+    function renderRecurring() {
+      const tbody = document.getElementById('recurringTableBody');
+      tbody.innerHTML = '';
+
+      recurringData.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-panel/70 transition';
+        tr.innerHTML = `
+          <td class="py-2.5 px-3 font-semibold text-textLight">${r.account}</td>
+          <td class="py-2.5 px-3"><span class="px-1.5 py-0.5 rounded bg-panel border border-panelBorder text-[9px]">${r.sector}</span></td>
+          <td class="py-2.5 px-3 text-accentCyan">${r.testType}</td>
+          <td class="py-2.5 px-3 text-textMuted">${r.standard}</td>
+          <td class="py-2.5 px-3 text-textMuted">${r.lastDone}</td>
+          <td class="py-2.5 px-3 font-bold ${r.daysLeft <= 7 ? 'text-alertRed' : 'text-textLight'}">${r.dueDate} (${r.daysLeft}d)</td>
+          <td class="py-2.5 px-3 text-right font-bold text-signalGreen">${r.estValue}</td>
+          <td class="py-2.5 px-3 text-center">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${r.status === 'URGENT' ? 'bg-alertRed/20 text-alertRed border border-alertRed/40' : 'bg-panel border border-panelBorder text-textMuted'}">
+              ${r.status}
+            </span>
+          </td>
+          <td class="py-2.5 px-3 text-center">
+            <button onclick="alert('Booking dispatched to client FM calendar!')" class="px-2.5 py-1 rounded bg-accentOrange/20 hover:bg-accentOrange/30 text-accentOrange border border-accentOrange/40 text-[10px] font-bold transition">
+              Book Tech Slot
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Recalculate Quote Engine
+    function recalculateQuote() {
+      const hrsSenior = parseFloat(document.getElementById('hrsSenior').value) || 0;
+      const hrsApprentice = parseFloat(document.getElementById('hrsApprentice').value) || 0;
+      const hrsTruck = parseFloat(document.getElementById('hrsTruck').value) || 0;
+
+      const cableMeters = parseFloat(document.getElementById('cableMeters').value) || 0;
+      const switchgearCost = parseFloat(document.getElementById('switchgearCost').value) || 0;
+      const consumablesCost = parseFloat(document.getElementById('consumablesCost').value) || 0;
+
+      // Pricing logic:
+      // Labour direct cost: Senior $65 cost / $125 sell; Apprentice $35 cost / $65 sell
+      const seniorCost = hrsSenior * 65;
+      const apprenticeCost = hrsApprentice * 35;
+      const truckCost = hrsTruck * 45;
+      const totalLabourCost = seniorCost + apprenticeCost;
+
+      // Cable cost @ 70mm² orange circular ~ $28/m baseline
+      const cableCost = cableMeters * 28.50;
+      const totalMaterialsCost = cableCost + switchgearCost + consumablesCost;
+
+      const primeCost = totalLabourCost + totalMaterialsCost + truckCost;
+
+      // Target Margin = 39.2% Sell = Cost / (1 - 0.392)
+      const targetGP = 0.392;
+      const sellExGst = primeCost / (1 - targetGP);
+      const sellIncGst = sellExGst * 1.10;
+
+      document.getElementById('summaryLabour').textContent = '$' + totalLabourCost.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+      document.getElementById('summaryMaterials').textContent = '$' + totalMaterialsCost.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+      document.getElementById('summaryPlant').textContent = '$' + truckCost.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+      document.getElementById('summaryPrimeCost').textContent = '$' + primeCost.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+      document.getElementById('summarySellPrice').textContent = '$' + sellExGst.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+      document.getElementById('summarySellIncGST').textContent = '$' + sellIncGst.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    }
+
+    // Tab Switching
+    function switchTab(tabId) {
+      const views = ['sentinel', 'dispatch', 'auditor', 'quoter', 'accounts'];
+      views.forEach(v => {
+        document.getElementById('view-' + v).classList.add('hidden');
+        const btn = document.getElementById('tab-' + v);
+        btn.className = 'nav-btn px-3 py-1.5 rounded transition flex items-center gap-1.5 text-textMuted hover:text-textLight hover:bg-panel border border-transparent';
+      });
+
+      document.getElementById('view-' + tabId).classList.remove('hidden');
+      const activeBtn = document.getElementById('tab-' + tabId);
+      activeBtn.className = 'nav-btn px-3 py-1.5 rounded transition flex items-center gap-1.5 bg-accentCyan/15 text-accentCyan border border-accentCyan/40 shadow-[0_0_10px_rgba(0,229,255,0.15)]';
+    }
+
+    // Sector Filter
+    function filterSector(sector) {
+      renderJobs(sector);
+    }
+
+    // Modal Handlers
+    function openVariationModal(jobId = 'WO-4092') {
+      document.getElementById('varJobSelect').value = jobId;
+      document.getElementById('variationModal').classList.remove('hidden');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    function submitVariation() {
+      alert('Variation Request generated and emailed directly to Client Facility Manager. Live gross margin restored to 39.8%!');
+      closeModal('variationModal');
+    }
+
+    function openMoverCampaign() {
+      document.getElementById('moverModal').classList.remove('hidden');
+    }
+
+    function absorbDowntime(techName) {
+      alert(`Downtime Absorber Engaged: ${techName} rerouted to nearby scheduled statutory RCD test at Post Office Square. 90 minutes of billable time ($180 revenue) successfully protected.`);
+    }
+
+    function saveAndSendQuote() {
+      alert('Quote approved! Client proposal generated and follow-up CRM reminder scheduled for 72 hours.');
+    }
+
+    // Initialization
+    window.onload = function() {
+      renderJobs();
+      renderTechs();
+      renderAudits();
+      renderRecurring();
+      recalculateQuote();
+    };
+  </script>
+</body>
+</html>
